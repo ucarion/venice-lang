@@ -1,0 +1,15 @@
+struct asDF001_6a { a ,  s,d,  f}
+
+struct Point {
+    x,
+    y
+}
+
+impl Point {
+    fn foo() {
+        6;
+        b;
+        "hello world? \n";
+        1 + (3 + 6);
+    }
+}
