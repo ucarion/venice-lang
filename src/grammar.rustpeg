@@ -9,37 +9,31 @@ program -> Program =
 item -> Item = struct / impl
 
 struct -> Item =
-    "struct" __ name:identifier __ "{" _ attrs:(struct_attr ** ("," _)) _ "}" {
+    "struct" __ name:identifier _ "{" _ attrs:(struct_attr ** (_ "," _)) _ "}" {
         Item::Struct(Struct { name: name, attrs: attrs })
     }
 
-struct_attr -> String = id:identifier _ { id }
+struct_attr -> String = identifier
 
 impl -> Item =
-    "impl" __ name:identifier __ "{" _ methods:(method ** _) _ "}" {
+    "impl" __ name:identifier _ "{" _ methods:(method ** _) _ "}" {
         Item::Impl(Impl { name: name, methods: methods })
     }
 
 method -> Method =
-    "fn" __ name:identifier "(" args:(identifier ** ("," _)) _ ")" _ block:block {
+    "fn" __ name:identifier "(" args:(identifier ** (_ "," _)) _ ")" _ block:block {
         Method { name: name, args: args, body: block }
     }
 
 expr -> Expr =
     block
     / "(" e:expr ")" { e }
-    / binary_expr
     / identifier_expr
     / int_literal
     / string_literal
 
 block -> Expr =
-    "{" _ exprs:(expr ** (";" _)) _ "}" { Expr::Block(exprs) }
-
-binary_expr -> Expr =
-    e1:expr _ "+" _ e2:expr {
-        Expr::BinaryOp(Box::new(e1), BinaryOp::Add, Box::new(e2))
-    }
+    "{" _ exprs:(expr ** (_ ";" _)) ";"? _ "}" { Expr::Block(exprs) }
 
 identifier_expr -> Expr =
     id:identifier { Expr::Identifier(id) }

@@ -6,10 +6,9 @@ struct Point {
 }
 
 impl Point {
-    fn foo() {
-        6;
+    fn foo(a, b) {
+        a;
         b;
-        "hello world? \n";
-        1 + (3 + 6);
+        "hello world";
     }
 }
