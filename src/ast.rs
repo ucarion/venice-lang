@@ -34,6 +34,7 @@ pub enum Expr {
     IntLiteral(String),
     StringLiteral(String),
     VecLiteral(Vec<Expr>),
+    MapLiteral(Vec<(String, Expr)>),
 
     MethodCall(Box<Expr>, String, Vec<Expr>),
     Assignment(Access, Box<Expr>),

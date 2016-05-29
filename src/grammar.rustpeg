@@ -55,6 +55,7 @@ atomic_expr -> Expr
     / int_literal
     / string_literal
     / vec_literal
+    / map_literal
 
 block -> Expr =
     "{" _ exprs:(expr ** (_ ";" _)) ";"? _ "}" { Expr::Block(exprs) }
@@ -70,6 +71,12 @@ string_literal -> Expr
 
 vec_literal -> Expr
     = "[" _ exprs:(expr ** (_ "," _ ))  _ "]" { Expr::VecLiteral(exprs) }
+
+map_literal -> Expr
+    = "{" _ entries:(map_entry ** (_ "," _ )) _ "}" { Expr::MapLiteral(entries) }
+
+map_entry -> (String, Expr)
+    = id:identifier _ ":" _ expr:expr { (id, expr) }
 
 method_call -> Expr
     = lhs:atomic_expr _ "." _ name:identifier _ "(" _ args:(expr ** (_ "," _))  _ ")" {
