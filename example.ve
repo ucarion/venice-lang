@@ -1,7 +1,5 @@
-impl Point {
-    fn foo(a, b) {
-        for num in [1, 2, 3] {
-            IO.println(num);
-        }
+impl Blah {
+    fn whatever() {
+        IO.out(4 * 5 + 10 / 2 - 25)
     }
 }
