@@ -1,5 +1,7 @@
 impl Point {
     fn foo(a, b) {
-        [1, {a: 2, b: 3}, 3]
+        for num in [1, 2, 3] {
+            IO.println(num);
+        }
     }
 }

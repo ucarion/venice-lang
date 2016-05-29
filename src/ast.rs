@@ -39,13 +39,17 @@ pub enum Expr {
     MethodCall(Box<Expr>, String, Vec<Expr>),
     Assignment(Access, Box<Expr>),
     BinaryOp(Box<Expr>, BinaryOp, Box<Expr>),
+    Conditional(Box<Expr>, Box<Expr>, Box<Expr>),
+    While(Box<Expr>, Box<Expr>),
+    For(String, Box<Expr>, Box<Expr>),
     Block(Vec<Expr>),
 }
 
 #[derive(Debug)]
 pub enum Access {
+    Identifier(String),
     Member(Box<Expr>, String),
-    Identifier(String)
+    Index(Box<Expr>, Box<Expr>)
 }
 
 #[derive(Debug)]

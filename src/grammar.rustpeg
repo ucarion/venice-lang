@@ -51,6 +51,9 @@ simple_expr -> Expr
 
 atomic_expr -> Expr
     = "(" e:expr ")" { e }
+    / conditional
+    / while_loop
+    / for_loop
     / identifier_expr
     / int_literal
     / string_literal
@@ -78,6 +81,19 @@ map_literal -> Expr
 map_entry -> (String, Expr)
     = id:identifier _ ":" _ expr:expr { (id, expr) }
 
+conditional -> Expr
+    = "if" _ pred:expr _ then_block:block _ "else" _ else_block:block {
+        Expr::Conditional(Box::new(pred), Box::new(then_block), Box::new(else_block))
+    }
+
+while_loop -> Expr
+    = "while" __ pred:expr _ block:block { Expr::While(Box::new(pred), Box::new(block)) }
+
+for_loop -> Expr
+    = "for" __ id:identifier __ "in" __ e:expr _ block:block {
+        Expr::For(id, Box::new(e), Box::new(block))
+    }
+
 method_call -> Expr
     = lhs:atomic_expr _ "." _ name:identifier _ "(" _ args:(expr ** (_ "," _))  _ ")" {
         Expr::MethodCall(Box::new(lhs), name, args)
@@ -88,6 +104,7 @@ assignment -> Expr
 
 access -> Access
     = lhs:atomic_expr _ "." _ id:identifier { Access::Member(Box::new(lhs), id) }
+    / lhs:atomic_expr _ "[" _ index:expr _ "]" { Access::Index(Box::new(lhs), Box::new(index)) }
     / id:identifier { Access::Identifier(id) }
 
 identifier -> String = [a-zA-Z][a-zA-Z0-9_]* { match_str.to_string() }
