@@ -25,7 +25,7 @@ pub struct Impl {
 pub struct Method {
     pub name: String,
     pub args: Vec<String>,
-    pub body: Expr,
+    pub body: Expr
 }
 
 #[derive(Debug)]
@@ -33,11 +33,18 @@ pub enum Expr {
     Identifier(String),
     IntLiteral(String),
     StringLiteral(String),
+    VecLiteral(Vec<Expr>),
 
-    MethodCall { lhs: Option<Box<Expr>>, name: String, args: Vec<Expr> },
-    Assign { name: String, value: Box<Expr> },
+    MethodCall(Box<Expr>, String, Vec<Expr>),
+    Assignment(Access, Box<Expr>),
     BinaryOp(Box<Expr>, BinaryOp, Box<Expr>),
     Block(Vec<Expr>),
+}
+
+#[derive(Debug)]
+pub enum Access {
+    Member(Box<Expr>, String),
+    Identifier(String)
 }
 
 #[derive(Debug)]

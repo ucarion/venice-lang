@@ -25,12 +25,36 @@ method -> Method =
         Method { name: name, args: args, body: block }
     }
 
-expr -> Expr =
-    block
-    / "(" e:expr ")" { e }
+expr -> Expr = sum
+
+sum -> Expr
+    = a:product _ op:add_op _ b:sum { Expr::BinaryOp(Box::new(a), op, Box::new(b)) }
+    / product
+
+product -> Expr
+    = a:simple_expr _ op:mul_op _ b:product { Expr::BinaryOp(Box::new(a), op, Box::new(b)) }
+    / simple_expr
+
+add_op -> BinaryOp
+    = "+" { BinaryOp::Add }
+    / "-" { BinaryOp::Sub }
+
+mul_op -> BinaryOp
+    = "*" { BinaryOp::Mul }
+    / "/" { BinaryOp::Div }
+
+simple_expr -> Expr
+    = block
+    / method_call
+    / assignment
+    / atomic_expr
+
+atomic_expr -> Expr
+    = "(" e:expr ")" { e }
     / identifier_expr
     / int_literal
     / string_literal
+    / vec_literal
 
 block -> Expr =
     "{" _ exprs:(expr ** (_ ";" _)) ";"? _ "}" { Expr::Block(exprs) }
@@ -43,6 +67,21 @@ int_literal -> Expr =
 
 string_literal -> Expr
     = "\"" (!"\"" .)* "\"" { Expr::StringLiteral(match_str.to_string()) }
+
+vec_literal -> Expr
+    = "[" _ exprs:(expr ** (_ "," _ ))  _ "]" { Expr::VecLiteral(exprs) }
+
+method_call -> Expr
+    = lhs:atomic_expr _ "." _ name:identifier _ "(" _ args:(expr ** (_ "," _))  _ ")" {
+        Expr::MethodCall(Box::new(lhs), name, args)
+    }
+
+assignment -> Expr
+    = lhs:access _ "=" _ rhs:expr { Expr::Assignment(lhs, Box::new(rhs)) }
+
+access -> Access
+    = lhs:atomic_expr _ "." _ id:identifier { Access::Member(Box::new(lhs), id) }
+    / id:identifier { Access::Identifier(id) }
 
 identifier -> String = [a-zA-Z][a-zA-Z0-9_]* { match_str.to_string() }
 

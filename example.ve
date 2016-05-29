@@ -1,14 +1,5 @@
-struct asDF001_6a { a ,  s,d,  f}
-
-struct Point {
-    x,
-    y
-}
-
 impl Point {
     fn foo(a, b) {
-        a;
-        b;
-        "hello world";
+        [1, [a.foo()], 3]
     }
 }
